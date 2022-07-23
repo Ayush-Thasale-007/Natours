@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const cookieParser = require("cookie-parser");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Set security HTTP headers
 app.use(helmet());
 
+app.use(cookieParser());
 // Development logging
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
