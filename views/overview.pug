@@ -1,7 +1,7 @@
 extends base
 
 block content
-  main.main
+  main.main 
     .card-container
 
       each tour in tours
@@ -19,7 +19,7 @@ block content
             .card__data
               svg.card__icon
                 use(xlink:href='/img/icons.svg#icon-map-pin')
-              span= tour.startLocation.description
+              span= tour.startLocation.description 
             .card__data
               svg.card__icon
                 use(xlink:href='/img/icons.svg#icon-calendar')

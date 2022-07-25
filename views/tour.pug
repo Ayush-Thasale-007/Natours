@@ -1,21 +1,16 @@
 extends base
 include _reviewCard
+include _overviewBox
 
 block append head
+  //- Leaflet
   link(rel='stylesheet' href='https://unpkg.com/leaflet@1.8.0/dist/leaflet.css'
-    integrity='sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==' crossorigin='')
-  script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
-    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
-    crossorigin="")
+   integrity='sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==' crossorigin='')
+  script(src='https://unpkg.com/leaflet@1.8.0/dist/leaflet.js'
+   integrity='sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=='
+   crossorigin='')
 
-mixin overviewBox(label, text, icon)
-  .overview-box__detail
-    svg.overview-box__icon
-      use(xlink:href=`/img/icons.svg#icon-${icon}`)
-    span.overview-box__label= label
-    span.overview-box__text= text
-
-block content
+block content 
   section.section-header
     .header__hero
       .header__hero-overlay &nbsp;
@@ -48,7 +43,6 @@ block content
 
         .overview-box__group
           h2.heading-secondary.ma-bt-lg Your tour guides
-
           each guide in tour.guides
             .overview-box__detail
               img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
@@ -61,16 +55,15 @@ block content
 
     .description-box
       h2.heading-secondary.ma-bt-lg= `About ${tour.name} tour`
-      - const parapraphs = tour.description.split('\n');
-      each p in parapraphs
-        p.description__text= p
+
+      - const paragraphs = tour.description.split('\n');
+      each paragraph in paragraphs
+        p.description__text= paragraph
 
   section.section-pictures
     each img, i in tour.images
       .picture-box
-        img.picture-box__img(src=`/img/tours/${img}`, alt=`The Park Camper Tour ${i + 1}`, class=`picture-box__img--${i + 1}`)
-
-
+        img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`)
 
   section.section-map
     #map(data-locations=`${JSON.stringify(tour.locations)}`)
@@ -89,4 +82,10 @@ block content
       .cta__content
         h2.heading-secondary What are you waiting for?
         p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
-        button.btn.btn--green.span-all-rows Book tour now!
+
+        if user
+          button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
+        else 
+          a.btn.btn--green.span-all-rows(href='/login') Log in to book tour
+  
+  script(type="module" src='/js/leaflet.js')

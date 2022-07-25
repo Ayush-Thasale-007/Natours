@@ -1,33 +1,58 @@
-const express = require('express');
-const userController = require('./../controllers/userController');
-const authController = require('./../controllers/authController');
+// ----------------------------------------------
+// Imports
+// ----------------------------------------------
+import express from 'express';
 
+import {
+  getAllUsers,
+  getUser,
+  updateUser,
+  createUser,
+  deleteUser,
+  getCurrentUser,
+  updateCurrentUser,
+  deleteCurrentUser,
+  uploadUserPhoto,
+  resizeUserPhoto,
+} from '../controllers/userController.js';
+import {
+  signup,
+  login,
+  logout,
+  protect,
+  restrictTo,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+} from '../controllers/authController.js';
+
+// ----------------------------------------------
+// Routes
+// ----------------------------------------------
 const router = express.Router();
 
-router.post('/signup', authController.signup);
-router.post('/login', authController.login);
-router.post('/forgotPassword', authController.forgotPassword);
-router.patch('/resetPassword/:token', authController.resetPassword);
+// Free access routes
+router.post('/signup', signup);
+router.post('/login', login);
+router.get('/logout', logout);
+router.post('/forgotPassword', forgotPassword);
+router.patch('/resetPassword/:token', resetPassword);
 
-// Protect all routes after this middleware
-router.use(authController.protect);
+// Routes after this middleware are protected
+router.use(protect);
+router.patch('/updateMyPassword', updatePassword);
+router.get('/currentUser', getCurrentUser, getUser);
+router.patch(
+  '/updateCurrentUser',
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateCurrentUser
+);
+router.delete('/deleteCurrentUser', deleteCurrentUser);
 
-router.patch('/updateMyPassword', authController.updatePassword);
-router.get('/me', userController.getMe, userController.getUser);
-router.patch('/updateMe', userController.updateMe);
-router.delete('/deleteMe', userController.deleteMe);
+// Routes restricted to admin access
+router.use(restrictTo('admin'));
+router.route('/').get(getAllUsers).post(createUser);
+router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
-router.use(authController.restrictTo('admin'));
-
-router
-  .route('/')
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
-
-router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
-
-module.exports = router;
+export default router;
